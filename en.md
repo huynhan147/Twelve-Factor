@@ -2,9 +2,9 @@
 
 # The Twelve-Factor App
 
-In the modern era, software is commonly delivered as a service: called _web apps_, or _software-as-a-service_. The twelve-factor app is a methodology for building software-as-a-service apps that:
+Trong thời đại hiện đại, phần mềm thường được phân phối dưới dạng dịch vụ: được gọi là  _web apps_, hoặc  _software-as-a-service_. 12 yếu tố về ứng dụng là phương pháp xây dựng ứng dụng về phần mềm như 1 dịch vụ như là:
 
-* Use **declarative** formats for setup automation, to minimize time and cost for new developers joining the project;
+* Sử dụng các chuẩn **khai báo** cho việc tự động cài đặt (thiết lập), để giảm thiểu thời gian và chi phí cho những lập trình viên mới tham gia vào dự án;
 * Have a **clean contract** with the underlying operating system, offering **maximum portability** between execution environments;
 * Are suitable for **deployment** on modern **cloud platforms**, obviating the need for servers and systems administration;
 * **Minimize divergence** between development and production, enabling **continuous deployment** for maximum agility;
