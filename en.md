@@ -46,44 +46,49 @@ Chỉ có duy nhất 1 codebase mỗi ứng dụng, nhưng sẽ có nhiều tri�
 Codebase là chung giữa tất cả các triển khai, mặc dù các phiên bản khác nhau có thể hoạt động trong mỗi triển khai. Ví dụ, 1 người phát triển có vài commit chưa đượcđược triển khai đến staging, staging có vài commit chưa được triển khai tới production. Nhưng tất cả chúng đều chia sẻ cùng codebase, vì thế làm chún có thể được định dạng như là các triển khai khác nhau của cùng 1 ứng dụng.
 
 
-## II. Dependencies
+## II. Phụ thuộc
 
-### Explicitly declare and isolate dependencies
+### Khai báo rõ ràng và tách biệt các phụ thuộc
 
-Most programming languages offer a packaging system for distributing support libraries, such as [CPAN][10] for Perl or [Rubygems][11] for Ruby. Libraries installed through a packaging system can be installed system-wide (known as "site packages") or scoped into the directory containing the app (known as "vendoring" or "bundling").
+Hầu hết các ngôn ngữ lập trình cho phép 1 hệ thống packaging phân phối các thư viện hỗ trợ, như là CPAN cho Perl hoặc [Rubygems][11] chu Ruby. Các thư viện được cài đặt thông qua hệ thống packaging có thể được cài đặt mức-hệ-thống ( được hiểu như là “các site package”) hoặc chỉ trọng phạm vi thư mục chứa ứng dụng ( được biết như là “vendoring” hoặc “bundling”).
 
-**A twelve-factor app never relies on implicit existence of system-wide packages.** It declares all dependencies, completely and exactly, via a _dependency declaration_ manifest. Furthermore, it uses a _dependency isolation_ tool during execution to ensure that no implicit dependencies "leak in" from the surrounding system. The full and explicit dependency specification is applied uniformly to both production and development.
+1 ứng dụng theo 12-chuẩn không bao giờ phụ thuộc vào các tồn tại ngầm của các gọi mức-hệ-thống. Nó khai báo tất cả các phụ thuộc, hoàn thiện và chính xác, thống qua 1 biểu thị khai báo phụ thuộc. Hơn nữa, nó sử dụng 1 công cụ tách biệt phụ thuộc trong quá trình thực thi để đảm bảo rằng không có phụ thuộc ngầm nào “lọt vào” từ các hệ thống xung quanh. Đặc tả phụ thuộc đầy đủ và rõ ràng được áp dụng thống nhất cho cả productiont và developer.
 
-For example, [Bundler][12] for Ruby offers the `Gemfile` manifest format for dependency declaration and `bundle exec` for dependency isolation. In Python there are two separate tools for these steps – [Pip][13] is used for declaration and [Virtualenv][14] for isolation. Even C has [Autoconf][15] for dependency declaration, and static linking can provide dependency isolation. No matter what the toolchain, dependency declaration and isolation must always be used together – only one or the other is not sufficient to satisfy twelve-factor.
+Để ví dụ, [Bundler][12] cho Ruby cung cấp một `Gemfile` để định dạng một khai báo phụ thuộc và `bundle exec` để cô lập sự phụ thuộc đó. Trong Python có 2 công cụ riêng biệt cho các bước này 
 
-One benefit of explicit dependency declaration is that it simplifies setup for developers new to the app. The new developer can check out the app's codebase onto their development machine, requiring only the language runtime and dependency manager installed as prerequisites. They will be able to set up everything needed to run the app's code with a deterministic _build command_. For example, the build command for Ruby/Bundler is `bundle install`, while for Clojure/[Leiningen][16] it is `lein deps`.
+- [Pip][13] được sử dụng để khai báo và [Virtualenv][14] để tách biệt chúng. Và C cũng có [Autoconf][15] để khai báo phụ thuộc, đường dẫn tĩnh có thể cung cấp việc tách biệt các phụ thuộc. Bất kể dùng tập công cụ nào, khai báo và tách biệt phụ thuộc luôn phải được sử dụng cùng nhau - chỉ một là không đủ để thỏa mãn 12-chuẩn.
 
-Twelve-factor apps also do not rely on the implicit existence of any system tools. Examples include shelling out to ImageMagick or `curl`. While these tools may exist on many or even most systems, there is no guarantee that they will exist on all systems where the app may run in the future, or whether the version found on a future system will be compatible with the app. If the app needs to shell out to a system tool, that tool should be vendored into the app.
+1 lợi ích của việc khai báo phụ thuộc rõ ràng là nó đơn giản hóa việc cài đặt cho những người phát triển mới của ứng dụng. Người phát triển mới có thể lấy codebase của ứng dụng về máy phát triển của họ, với điều kiện tiên quyết chỉ yêu cầu ngôn ngữữ chạy và quản lý phụ thuộc được cài đặt. Họ sẽ cóó thể cài đặt bất cứ thứ gì cần thiết để chạy code của ứng dụng với 1 lệnh _xây dựng xác định_. Ví dụ, lấy xây dựng cho Ruby/Bundler là `bundle install`, trong khi đó với Clojure/[Leiningen][16] lại là `lein deps`.
+
+Các ứng dụng theo 12-chuẩn cũng không phụ thuộc vào các tồn tại ngầm của bất kỳ công cụ hệ thống nào. Ví dụ bao gồm cả với ImageMagick hay `curl`. Trong khi nhưng công cụ này có thể tồn tại trên nhiều hay thậm chí là hầu hết các hệ thống, không có gì bảo đảm rằng chúng sẽ tồn tại trên tất cả các hệ thống mà ứng dụng có thể chạy trong tương lại, hay 1 phiên bản được tìm thấy trong hệ thống tương lai có thể tương thích với ứng dụng. Nếu ứng dụng cần 1 công cụ hệ thống, công cụ đó cần được gán vào ứng dụng.
 
 
-## III. Config
 
-### Store config in the environment
+## III. Cấu hình
 
-An app's _config_ is everything that is likely to vary between [deploys][17] (staging, production, developer environments, etc). This includes:
+### Lưu cấu hình trong môi trường
 
-* Resource handles to the database, Memcached, and other [backing services][18]
-* Credentials to external services such as Amazon S3 or Twitter
-* Per-deploy values such as the canonical hostname for the deploy
+_Cấu hình_ của 1 ứng dụng là bất cứ thứ gì giống như là sự thay đổi giữa [deploys][17] (môi trường staging, production, developer, etc). Nó bao gồm:
 
-Apps sometimes store config as constants in the code. This is a violation of twelve-factor, which requires **strict separation of config from code**. Config varies substantially across deploys, code does not.
+* Nguồn xử lý cơ sở dữ liệu, Memcaches, và các  [backing services][18]
+* Thông tin đăng nhập cho các dịch vụ bên ngoài như Amazon S3 hoặc Twitter
+* Các giá trị của mỗi-triển-khai như là tên máy chủ của triển khai
 
-A litmus test for whether an app has all config correctly factored out of the code is whether the codebase could be made open source at any moment, without compromising any credentials.
+Các ứng dụng đôi khi lưu trữ cấu hình như các hằngằng số trong code. Điều này xung đột với 12-chuẩn, khi nó yêu cầu  **tính tách biệt 1 cách nghiêm ngặt trong cấu hình ở code**. Cấu hình thay đổi giữa các triển khai, còn code thì không.
 
-Note that this definition of "config" does **not** include internal application config, such as `config/routes.rb` in Rails, or how [code modules are connected][19] in [Spring][20]. This type of config does not vary between deploys, and so is best done in the code.
+1 kiểm thử thí nghiệm kiểm tra ứng dụng có tất cả cấuấu hình chính xác với code là khi codebae có thể tạo mã nguồn mở bất cứ khi nào, mà không ảnh hưởng bất cứ thông tin xác thực nào.
 
-Another approach to config is the use of config files which are not checked into revision control, such as `config/database.yml` in Rails. This is a huge improvement over using constants which are checked into the code repo, but still has weaknesses: it's easy to mistakenly check in a config file to the repo; there is a tendency for config files to be scattered about in different places and different formats, making it hard to see and manage all the config in one place. Further, these formats tend to be language- or framework-specific.
 
-**The twelve-factor app stores config in _environment variables_** (often shortened to _env vars_ or _env_). Env vars are easy to change between deploys without changing any code; unlike config files, there is little chance of them being checked into the code repo accidentally; and unlike custom config files, or other config mechanisms such as Java System Properties, they are a language- and OS-agnostic standard.
+Lưu ý rằng định nghĩa "config"  **không** bao gồm các cấu hình nội bộ ứng dụng, như là `config/routes.rb` trong Rails, hoặc cách mà [các code modules kết nối][19] trong [Spring][20]. Loại cấu hình này không thay đổi giữa các triển khai, và ví thể hoàn thiện nhất trong code.
 
-Another aspect of config management is grouping. Sometimes apps batch config into named groups (often called "environments") named after specific deploys, such as the `development`, `test`, and `production` environments in Rails. This method does not scale cleanly: as more deploys of the app are created, new environment names are necessary, such as `staging` or `qa`. As the project grows further, developers may add their own special environments like `joes-staging`, resulting in a combinatorial explosion of config which makes managing deploys of the app very brittle.
+1 cách tiếp cận khác với cấu hình là sử dụng các file cấu hình không được kiểm soát trong kiểm soát thay đổi, như là  `config/database.yml` trong Rails. Đây là 1 cải thiện lớn so với việc sử dụng các hằng số được kiểm soát trongong code repo, nhưng vẫn còn những nhược điểm: nó rất dễ kiểm soát lỗi 1 file cấu hình trong repo, có 1 xu hướng là các file cấu hình sẽ nằm rải rác ở những chỗ khác nhau và trong những định dạng khác nhau, khiên nó khó để thấy và kiểm soát tất cả các cấu hình trong 1 chỗ. Hơn nữa những định dạng này có xu hướng riêng biệt với từng ngôn ngữ hay framework.
 
-In a twelve-factor app, env vars are granular controls, each fully orthogonal to other env vars. They are never grouped together as "environments", but instead are independently managed for each deploy. This is a model that scales up smoothly as the app naturally expands into more deploys over its lifetime.
+**Ứng dụng theo 12-chuẩn lưu trữ cấu trình trong _các biến môi trường_** (thường gọi tắt mà _env vars_ hoặc _env_). ENV vars thường dễ thay đổi giữa các triển khai mà không phải thay đổi code, không giống như các file cấu hình, chỉ 1 chút thay đổi của chúng được kiểm soát phụ thuocj bởi code repo; và không giống các file cấu hình thông thường, các cơ chế cấu hình khác như Java System Properties, chúng là các chuẩn ngôn ngữ và OS-agnostic.
+
+1 khía cạnh khác của quản lý cấu hình là gom nhóm. Đôi khi các ứng dụng gom cấu hình thành các tên nhóm ( thường gọi là “các môi trường”) được đặt tên sau các triển khai cụ thể, như là môi trường `development`, `test`, và  `production` trong Rails. Phương pháp này không được gọn cho lắm: vì sẽ có nhiều triển khai của ứng dụng được tạo ra, các tên môi trường mới sẽ cần thiết, như là `staging` hoặc `qa`. Vì dự án sẽ càng phát triển hơn, các người phát triển có thể sẽ thêm các môi trường đặc biệt riêng của họ như `joes-staging`, kết quả của việc kết hợp đống cấu hình này sẽ khiến việc quản lý triển khải của ứng dụng trở nên mong manh.
+
+Trong các ứng dụng 12-chuẩn, env vars là các điều khiển chi tiết, mỗi chúng trực giao đầy đủ với các env vars khác. Chúng không vào giờ được nhóm lại với nhau như làà "các môi trường", nhưng thay vào đó chúng quản lý độc lập cho từng triển khai. Đây là 1 mô hình nâng cao sự mượt mà, ứng dụng sự mở rộng 1 cách tự nhiên đến nhiều triển khai hơn trong suốt vòng đời của nó.
+
 
 ## IV. Backing services
 
