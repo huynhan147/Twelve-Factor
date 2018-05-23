@@ -5,48 +5,45 @@
 Trong thời đại hiện đại, phần mềm thường được phân phối dưới dạng dịch vụ: được gọi là  _web apps_, hoặc  _software-as-a-service_. 12 yếu tố về ứng dụng là phương pháp xây dựng ứng dụng về phần mềm như 1 dịch vụ như là:
 
 * Sử dụng các chuẩn **khai báo** cho việc tự động cài đặt (thiết lập), để giảm thiểu thời gian và chi phí cho những lập trình viên mới tham gia vào dự án;
-* Have a **clean contract** with the underlying operating system, offering **maximum portability** between execution environments;
-* Are suitable for **deployment** on modern **cloud platforms**, obviating the need for servers and systems administration;
-* **Minimize divergence** between development and production, enabling **continuous deployment** for maximum agility;
-* And can **scale up** without significant changes to tooling, architecture, or development practices.
+* Có các giao ước **rõ ràng** với hệ điều hành bên ,cung cấp **tối đa tính di động** giữa các môi trường thực thi;
+* Phù hợp cho việc  **phát triển** trên các **nền tảng đám mây** hiện đại, giảm bớt sự cần thiết cho máy chủ và các hệ thống quản lý;
+* **Giảm thiểu sự khác nhau** giữa môi trường phát triển và môi trường sản phẩm, cho phép **triển khai liên tục**  một cách linh động nhất;
+* Và có thể  **mở rộng quy mô** mà không có sự thay đổi đáng kể nào về mặt công cụ,kiến trúc hay thói quen phát triển phần mềm.
 
-The twelve-factor methodology can be applied to apps written in any programming language, and which use any combination of backing services (database, queue, memory cache, etc).
+Phương pháp luận 12-chuẩn có thể áp dụng cho các ứng dụng viết bằng bất kỳ ngôn ngữ lập trình nào, và sử dụng bất kỳ tập dịch vụ nền nào (database, queue, memory cache, etc).
 
 ## Background
 
-The contributors to this document have been directly involved in the development and deployment of hundreds of apps, and indirectly witnessed the development, operation, and scaling of hundreds of thousands of apps via our work on the [Heroku][1] platform.
-
-This document synthesizes all of our experience and observations on a wide variety of software-as-a-service apps in the wild. It is a triangulation on ideal practices for app development, paying particular attention to the dynamics of the organic growth of an app over time, the dynamics of collaboration between developers working on the app's codebase, and [avoiding the cost of software erosion][2].
-
-Our motivation is to raise awareness of some systemic problems we've seen in modern application development, to provide a shared vocabulary for discussing those problems, and to offer a set of broad conceptual solutions to those problems with accompanying terminology. The format is inspired by Martin Fowler's books [_Patterns of Enterprise Application Architecture][3]_ and [_Refactoring][4]_.
+Các tác giả của tài liệu đã áp dụng trực tiếp trong quá trình phát triển và triển khai hàng trăm ứng dụng, và giản tiếp chứng kiến quá trình phát triển, điều hành và mở rộng của hàng trăm nghìn ứng dụng qua công việc trên nền tảng [Heroku][1].
 
 
-## Who should read this document?
+Tài liệu này tổng hợp tất cả kinh nghiệm và quan sát của chúng tôi trên rất nhiều các ứng dụng phần-mềm-như-1-dịch-vụ trong cuộc sống. Nó là 3 khía cạnh chính trên các ý tưởng thực hành cho phát triển ứng dụng, tập trung cụ thể vào tính linh động của phát triển liên tục 1 cách có tổ chức của ứng dụng, tính linh động trong cộng tác giữa các người phát triển làm việc trên codebase của ứng dụng, và [tránh các chi phí của vận hành ứng dụng][2].
 
-Any developer building applications which run as a service. Ops engineers who deploy or manage such applications.
+Động lực của chúng tôi là nâng cao nhận thức về vài vấn đề có hệệ thống chúng tôi đã gặp trong phát triển ứng dụng hiện đại, để cung cấp các từ vựng chung để bàn luận về những vấn đề này, và để cho phép 1 tập các giải pháp khái niệm rộng lớn vào các vấn đề với các thuật ngữ kèm theo. Định dạn này lấy cảm hứng bởi cuốn sách của Martin Fowler, [_Patterns of Enterprise Application Architecture][3]_ and [_Refactoring][4]_.
 
 
-# The Twelve Factors
+## Ai nên đọc tài liệu này?
+
+Bất kỳ người phát triển nào đang xây dựng các ứng dụng chạy như là 1 dịch vụ. Thông thường các kĩ sư triển khai hoặc điều khiển những ứng dụng như vậy.
 
 ## I. Codebase
 
-### One codebase tracked in revision control, many deploys
+### codebase được theo dõi trong việc kiểm soát các thay đổi, nhiều triển khai.
 
-A twelve-factor app is always tracked in a version control system, such as [Git][5], [Mercurial][6], or [Subversion][7]. A copy of the revision tracking database is known as a _code repository_, often shortened to _code repo_ or just _repo_.
+1 ứng dụng tuân theo 12-chuẩn luôn luôn được theo dõi trong 1 hệ thống kiểm soát các phiên bản, như là [Git][5], [Mercurial][6], hoặc [Subversion][7]. 1 bản sao chéo của cơ sở dữ liệu theo dõi thay đổi được biết như là 1 code repository, thường được viết tắt là _code repo_ hoặc là _repo_.
 
-A _codebase_ is any single repo (in a centralized revision control system like Subversion), or any set of repos who share a root commit (in a decentralized revision control system like Git).
+ _codebase_ có thể là bất cứ repo đơn lẻ nào nào (trong 1 hệ thống kiểm soát sửa đổi tập trung như Subverrsion), hoặc có thể lả 1 tập các repo chia sẻ chung 1 commit gốc(trong 1 hệ thống kiểm soát sửa đổi phân cấp như Git).
 
-![One codebase maps to many deploys][8]
+![một bản đồ codebase cho nhiều triển khai][8]
 
-There is always a one-to-one correlation between the codebase and the app:
+Luôn luôn có sự tương quan 1-1 giữa codebase và ứng dụng:
 
-* If there are multiple codebases, it's not an app – it's a distributed system. Each component in a distributed system is an app, and each can individually comply with twelve-factor.
-* Multiple apps sharing the same code is a violation of twelve-factor. The solution here is to factor shared code into libraries which can be included through the [dependency manager][9].
+* Nếu có nhiều codebase, đó không phải là 1 ứng dụng - nó là 1 hệ thống phân cấp. Mỗi thành phần là 1 hệ thống được phân cấp trong 1 ứng dụng, và mỗi thành phần có thể tuân theo 12- chuẩn riêng 1 cách riêng lẻ.
+* Nhiều ứng dụng chia sẻ cùng code là 1 sư vi phạm 12- chuẩn. Giải pháp ở đây là quản lý chia sẻ code vào các thư viện mà có thể được thêm vào thông qua [phụ thuộc vào quản lý][9].
 
-There is only one codebase per app, but there will be many deploys of the app. A _deploy_ is a running instance of the app. This is typically a production site, and one or more staging sites. Additionally, every developer has a copy of the app running in their local development environment, each of which also qualifies as a deploy.
+Chỉ có duy nhất 1 codebase mỗi ứng dụng, nhưng sẽ có nhiều triển khải của ứng dụng. 1 triển khai sẽ chạy phiên bản của ứng dụng. Điều này thường là 1 phía của production, với 1 hoặc nhiều phía staging. Thêm vào đó, mỗi người phát triển có 1 bản sao của ứng dụng đang chạy trên môi trường developer nội bộ của họ, mỗi số chúng cũng được coi như 1 triển khai.
 
-The codebase is the same across all deploys, although different versions may be active in each deploy. For example, a developer has some commits not yet deployed to staging; staging has some commits not yet deployed to production. But they all share the same codebase, thus making them identifiable as different deploys of the same app.
-
+Codebase là chung giữa tất cả các triển khai, mặc dù các phiên bản khác nhau có thể hoạt động trong mỗi triển khai. Ví dụ, 1 người phát triển có vài commit chưa đượcđược triển khai đến staging, staging có vài commit chưa được triển khai tới production. Nhưng tất cả chúng đều chia sẻ cùng codebase, vì thế làm chún có thể được định dạng như là các triển khai khác nhau của cùng 1 ứng dụng.
 
 
 ## II. Dependencies
