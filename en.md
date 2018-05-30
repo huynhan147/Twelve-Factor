@@ -90,50 +90,50 @@ Lưu ý rằng định nghĩa "config"  **không** bao gồm các cấu hình n�
 Trong các ứng dụng 12-chuẩn, env vars là các điều khiển chi tiết, mỗi chúng trực giao đầy đủ với các env vars khác. Chúng không vào giờ được nhóm lại với nhau như làà "các môi trường", nhưng thay vào đó chúng quản lý độc lập cho từng triển khai. Đây là 1 mô hình nâng cao sự mượt mà, ứng dụng sự mở rộng 1 cách tự nhiên đến nhiều triển khai hơn trong suốt vòng đời của nó.
 
 
-## IV. Backing services
+## IV. Dịch vụ sao lưu
 
-### Treat backing services as attached resources
+### Điều chỉnh dich vụ sao lưu dưới dạng tài nguyên đính kèm
 
-A _backing service_ is any service the app consumes over the network as part of its normal operation. Examples include datastores (such as [MySQL][21] or [CouchDB][22]), messaging/queueing systems (such as [RabbitMQ][23] or [Beanstalkd][24]), SMTP services for outbound email (such as [Postfix][25]), and caching systems (such as [Memcached][26]).
+Một _dịch vụ sao lưu_ là một dịch vụ mà ứng dụng sử dụng trên mạng như là một phần trong các hoạt động thông thường của nó.Ví dụ như gồm có các kho dữ liệu (như là [MySQL][21] hoặc [CouchDB][22]), hệ thống nhắn tin/hàng đợi (như là [RabbitMQ][23] hoặc [Beanstalkd][24]), dịch vụ SMTP cho việc gửi đi các emai (như là [Postfix][25]), và các hệ thống caching (như mà [Memcached][26]).
 
-Backing services like the database are traditionally managed by the same systems administrators as the app's runtime deploy. In addition to these locally-managed services, the app may also have services provided and managed by third parties. Examples include SMTP services (such as [Postmark][27]), metrics-gathering services (such as [New Relic][28] or [Loggly][29]), binary asset services (such as [Amazon S3][30]), and even API-accessible consumer services (such as [Twitter][31], [Google Maps][32], or [Last.fm][33]).
+dịch vụ sao lưu giống như là một cơ sở dữ liệu được quản lý theo kiểu truyền thống giống kiểu một hệ thống administrator giống như là việc thực hiện trên thời gian thực của ứng dụng. Ngoài các dịch vụ được quản lý một cách cục bộ như này, ứng dụng cũng có thể có các dịch vụ được cung cấp và quản lý bởi 1 bên thứ ba khác. Ví dụ như dịch vụ SMTP (như là [Postmark][27]), các dịch vụ thu thập dữ liệu (như là [New Relic][28] hoặc [Loggly][29]), binary asset services (such as [Amazon S3][30]), and even API-accessible consumer services (such as [Twitter][31], [Google Maps][32], or [Last.fm][33]).
 
-**The code for a twelve-factor app makes no distinction between local and third party services.** To the app, both are attached resources, accessed via a URL or other locator/credentials stored in the [config][34]. A [deploy][35] of the twelve-factor app should be able to swap out a local MySQL database with one managed by a third party (such as [Amazon RDS][36]) without any changes to the app's code. Likewise, a local SMTP server could be swapped with a third-party SMTP service (such as Postmark) without code changes. In both cases, only the resource handle in the config needs to change.
+**Code của ứng dụng theo chuẩn 12 yếu tố không có sự phân biệt giữa local và dịch vụ bên thứ 3.** Đối với ứng dụng, cả 2 đều là dạng tài nguyên đính kèm, truy cập thông qua các URL hoặc phương thức định vị, xác thực khác được lưu trữ trong config [config][34]. Một [deploy][35] của ứng dụng tuân thủ 12 yếu tố có thể hoán đổi giữa cơ sở dữ liệu MySQL cục bộ với một hệ quản trị cơ sở dữ liệu cung cấp bởi bên thứ 3(như là [Amazon RDS][36]) mà không cần bất kỳ sự thay đổi nào vào trong code của ứng dụng. Tương tự vậy, một server SMTP local có thể đổi chỗ với một dịch vụ SMPT của bên thứ 3 (như là Postmark) mà không cần thay đổi code. Trong cả 2 trường hợp, chỉ có tài nguyên xử lý trong cấu hình cần phải thay đổi.
 
-Each distinct backing service is a _resource_. For example, a MySQL database is a resource; two MySQL databases (used for sharding at the application layer) qualify as two distinct resources. The twelve-factor app treats these databases as _attached resources_, which indicates their loose coupling to the deploy they are attached to.
+Mỗi dịch vụ sao lưu riêng biệt là một _nguồn tài nguyên_. Ví dụ, một cơ sở dữ liệu MySQL là một nguồn tài nguyên; hai cơ sở dữ liệu MySQL (sử dụng tiến trình lưu trữ dữ liệu tại lớp ứng dụng) đủ điều kiện làm 2 nguồn tài nguyên khác nhau. ứng dụng tuân thủ 12 yếu tố xử lý các cơ sở dữ liệu này như nguồn tài nguyên đính kèm, với sự lỏng lẻo trong khớp nối giữa chúng để triển khai việc gắn chúng vào ứng dụng.
 
 ![A production deploy attached to four backing services.][37]
 
-Resources can be attached to and detached from deploys at will. For example, if the app's database is misbehaving due to a hardware issue, the app's administrator might spin up a new database server restored from a recent backup. The current production database could be detached, and the new database attached – all without any code changes.
+Các tài nguyên có thể được đính kèm và tách ra khỏi việc deploy nếu muốn. Ví dụ, nếu cơ sở dữ liệu của ứng dụng  hoạt động không chuẩn do các vấn đề về phần cứng, người quản trị của ứng dụng có thể chuyển sang một máy chủ cơ sở dữ liệu mới đã được restore từ bản sao lưu gần nhất. Cơ sở dữ liệu production hiện tại có thể được tách ra và đính kèm một cơ sở dữ liệu mới - tất cả đều không cần thay đổi bất kỳ code nào.
 
 ## V. Build, release, run
 
-### Strictly separate build and run stages
+### các giai đoạn xây dựng và chạy hoàn toàn khác biệt
 
-A [codebase][38] is transformed into a (non-development) deploy through three stages:
+Một [codebase][38] được chuyển lên giai đoạn triển khai ( không phát triển ) trải qua 3 giai đoạn:
 
-* The _build stage_ is a transform which converts a code repo into an executable bundle known as a _build_. Using a version of the code at a commit specified by the deployment process, the build stage fetches vendors [dependencies][39] and compiles binaries and assets.
-* The _release stage_ takes the build produced by the build stage and combines it with the deploy's current [config][40]. The resulting _release_ contains both the build and the config and is ready for immediate execution in the execution environment.
-* The _run stage_ (also known as "runtime") runs the app in the execution environment, by launching some set of the app's [processes][41] against a selected release.
+* _Giai đoạn xây dựng_ là việc chuyển đổi mà nó convert từ các tập code vào một gói thực thi được gọi là _xây dựng_. Sử dụng các phiên bản code tại các commit xác định bởi quá trình triển khai, giai đoạn xây dựng tìm nạp các gói cung cấp [phụ thuộc][39], biên dịch các tệp nhị phân và các đính kèm.
+*  _Giai đoạn phát hành_ xây dựng bản dựng bởi giai đoạn xây dựng và kết hợp nó với[config][40] hiện tại của phiên bản triển khai. Kết quả của _phát hành_ chứa cả phiên bản dựng và các cấu hình và nó sẵn sàng thực hiện ngay lập tức trong môi trường thực thi.
+* _Giai đoạn chạy_ (được biết như là "runtime") chạy ứng dụng trên môi trường thực thi, bằng cách đưa ra một số [quy trình][41] của ứng dụng khác biệt so với 1 phiên bản phát hành đã chọn.
 
 ![Code becomes a build, which is combined with config to create a release.][42]
 
-**The twelve-factor app uses strict separation between the build, release, and run stages.** For example, it is impossible to make changes to the code at runtime, since there is no way to propagate those changes back to the build stage.
+**Ứng dụng tuân theo 12 yếu tố sử dụng phân chia chặt chẽ giữa các giai đoạn bản dựng, giai đoạn phát hành và giai đoạn chạy.** Ví dụ, nó không thể thay đổi mã nguồn khi đã chạy, vì không có cách nào để công bố những thay đổi đó quay trở lại giai đoạn xây dựng.
 
-Deployment tools typically offer release management tools, most notably the ability to roll back to a previous release. For example, the [Capistrano][43] deployment tool stores releases in a subdirectory named `releases`, where the current release is a symlink to the current release directory. Its `rollback` command makes it easy to quickly roll back to a previous release.
+Các công cụ triển khai tường cung cấp cả các công cụ quản lý việc phát hành,đáng chú ý nhất là khả năng quay trở lại phiên bản phát hành trước đó. Ví dụ, [Capistrano][43] triển khai công cụ lưu trữ các phiên bản phát hành trong 1 thư mục con có tên là  `releases`, nơi mà phiên bản phát hành hiện tạilà một liên kết tượng trưng đến thư mục của bản phát hành hiện tại. Nó giúp cho lệnh `rollback` thực hiện dễ dàng hơn để quay lại phiên bản trước nó 1 các nhanh chóng.
 
-Every release should always have a unique release ID, such as a timestamp of the release (such as `2011-04-06-20:32:17`) or an incrementing number (such as `v100`). Releases are an append-only ledger and a release cannot be mutated once it is created. Any change must create a new release.
+Mọi bản phát hành phải luôn có ID duy nhất, như là mốc thời gian của bản phát hành (ví dụ như `2011-04-06-20:32:17`) hoặc 1 số tự tăng (như là `v100`). Bản phát hành là phiên bản chỉ có thể thêm vào và bản phát hành không thể  có những đột biến khi nó được tạo ra. Mọi thay đổi đều phải tạo ra 1 phiên bản phát hành mới.
 
-Builds are initiated by the app's developers whenever new code is deployed. Runtime execution, by contrast, can happen automatically in cases such as a server reboot, or a crashed process being restarted by the process manager. Therefore, the run stage should be kept to as few moving parts as possible, since problems that prevent an app from running can cause it to break in the middle of the night when no developers are on hand. The build stage can be more complex, since errors are always in the foreground for a developer who is driving the deploy.
+Các phiên bản đựng được bắt đầu bơi các lập trình viên của ứng dụng đó khi code mới được triển khai.Theo thời gian chạy, ngược lại, có thể xảy ra trong các trường hợp tự động như là khởi động lại server, hoặc quá trình bị lỗi đang được các tiến trình quản lý quy trình khởi động lại. Vì thế, giai đoạn chạy nên giữ các thành phần ít bị di chuyển nhất có thể,vì các vấn đề ngăn chặn một ứng dụng đang chạy có thể bị gián đoạn ngay giữa đêm khi không có lập trình viên nào có mặt. Giai đoạn xây dựng có thể phức tạp hơn, vì các lỗi luôn ở trước mặt cho một nhà phát triển có thể thúc đẩy việc triển khai.
 
 
-## VI. Processes
+## VI. Tiến trình
 
-### Execute the app as one or more stateless processes
+### Thực thi ứng dụng dưới dạng một hoặc nhiều tiến trình không có trạng thái
 
-The app is executed in the execution environment as one or more _processes_.
+ứng dụng được thực thi trong môi trường thực thi như là 1 hoặc nhiều  _tiến trình_.
 
-In the simplest case, the code is a stand-alone script, the execution environment is a developer's local laptop with an installed language runtime, and the process is launched via the command line (for example, `python my_script.py`). On the other end of the spectrum, a production deploy of a sophisticated app may use many [process types, instantiated into zero or more running processes][44].
+Trng trường hợp đơn giản nhất, code là một tập lệnh độc lập, môi trường thực thi là laptop cục bộ của lập trình viên với một ngôn ngữ được cài đặt chạy theo thời gian, and the process is launched via the command line (for example, `python my_script.py`). On the other end of the spectrum, a production deploy of a sophisticated app may use many [process types, instantiated into zero or more running processes][44].
 
 **Twelve-factor processes are stateless and [share-nothing][45].** Any data that needs to persist must be stored in a stateful [backing service][46], typically a database.
 
