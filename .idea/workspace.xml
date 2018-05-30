@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="947769a4-b11e-41c7-bb7a-b53e422f845c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/en.md" beforeDir="false" afterPath="$PROJECT_DIR$/en.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,8 +17,8 @@
         <entry file="file://$PROJECT_DIR$/en.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="255">
-                <caret line="135" column="166" selection-start-line="135" selection-start-column="166" selection-end-line="135" selection-end-column="166" />
+              <first_editor relative-caret-position="375">
+                <caret line="159" column="40" selection-start-line="159" selection-end-line="159" selection-end-column="40" />
               </first_editor>
               <second_editor />
             </state>
@@ -101,12 +100,12 @@
       <workItem from="1527129595543" duration="6000" />
       <workItem from="1527555631271" duration="1332000" />
       <workItem from="1527679973400" duration="1759000" />
-      <workItem from="1527691203729" duration="3548000" />
+      <workItem from="1527691203729" duration="9275000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13840000" />
+    <option name="totallyTimeSpent" value="19567000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1366" y="25" width="1920" height="1020" extended-state="6" />
@@ -118,10 +117,10 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32869565" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32807216" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.3299435" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32919955" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -275,8 +274,8 @@
     <entry file="file://$PROJECT_DIR$/en.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="255">
-            <caret line="135" column="166" selection-start-line="135" selection-start-column="166" selection-end-line="135" selection-end-column="166" />
+          <first_editor relative-caret-position="375">
+            <caret line="159" column="40" selection-start-line="159" selection-end-line="159" selection-end-column="40" />
           </first_editor>
           <second_editor />
         </state>
