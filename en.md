@@ -237,32 +237,32 @@ _Logs_ cung cấp khả năng hiển thị các hành vi của ứng dụng đan
 
 Logs thường là các [luồng tổng hợp][98], các sự kiện được sắp xếp theo thời gian thu thập từ luồng output của tất cả ác tiến trình và các dịch vụ nền. Logs ở dạng thô thường là những đoạn văn bản với mỗi sự kiện trên 1 dòng(mặc dù backtrace của các trường hợp ngoại lệ thường có nhiều dòng). Log đều không có đầu hay cuối cố định, nhưng luồng của nó sẽ liên tục miễn là ứng dụng còn hoạt động.
 
-**A twelve-factor app never concerns itself with routing or storage of its output stream.** It should not attempt to write to or manage logfiles. Instead, each running process writes its event stream, unbuffered, to `stdout`. During local development, the developer will view this stream in the foreground of their terminal to observe the app's behavior.
+**Một ứng dụng tuân thủ 12 yếu tố không bao giờ liên quan tới việc định tuyến hay luồng lưu trữ các dữ liệu output của nó .** Nó không nên cố gắng ghi hay quản lý các file logs. thay vào đó, mỗi tiến trình đang chạy tự ghi luồng sự kiện của nó, không bị cản trở bởi `stdout`. Trong quá trình phát triển tại local, nhà phát triển sẽ theo dõi luồng này qua những vấn đề xung quanh trên terminal của họ để quan sát các hành vi của ứng dụng.
 
-In staging or production deploys, each process' stream will be captured by the execution environment, collated together with all other streams from the app, and routed to one or more final destinations for viewing and long-term archival. These archival destinations are not visible to or configurable by the app, and instead are completely managed by the execution environment. Open-source log routers (such as [Logplex][99] and [Fluentd][100]) are available for this purpose.
+TRong triển khai staging hoặc production, với mỗi luồng của tiến trình đều đưuọc theo dõi bởi tiến trình thưcj thi, đối chiếu với các luồng khác từ ứng dụng, và chuyển đến một hoặc nhiều điểm cuối để xem và  lưu trữ dài hạn. Các đích đến này thường không hiển thị hoặc được cấu hình bằng ứng dụng, và thay vào đó lại được quản lý hoàn toàn bằng môi trường thực thi. Bộ định tuyến các log mã nguồn mở (như là  [Logplex][99] và [Fluentd][100]) đã được cài đặt sẵn cho mục đích này.
 
-The event stream for an app can be routed to a file, or watched via realtime tail in a terminal. Most significantly, the stream can be sent to a log indexing and analysis system such as [Splunk][101], or a general-purpose data warehousing system such as [Hadoop/Hive][102]. These systems allow for great power and flexibility for introspecting an app's behavior over time, including:
+Các luồng sự kiện cho 1 ứng dụng có thể được điều hướng đến 1 file, hay được theo dõi thông qua lệnh tail thời gian thực trong 1 terminal. Đáng kể nhất là , luồng này có thể gửi đến hệ thống và lập chỉ mục cho logs như là [Splunk][101], hoặc một hệ thống kho dữ liệu đa năng như là [Hadoop/Hive][102]. CÁc hệ thống này cung cấp công suất và tính linh hoạt tuyệt vời để xem xét hành vi của ứng dụng theo thời gian, kể cả:
 
-* Finding specific events in the past.
-* Large-scale graphing of trends (such as requests per minute).
-* Active alerting according to user-defined heuristics (such as an alert when the quantity of errors per minute exceeds a certain threshold).
+* tìm một sự kiện cụ thể trong quá khứ.
+* Vẽ lại đồ thị có quy mô lớn (chẳng hạn như là lượng yêu cầu mỗi phút).
+* Cảnh báo hoạt động theo những chuẩn đoán do người dùng xác định (chẳng hạn như là cảnh báo khi số lượng lỗi trên phút vượt quá ngưỡng nhất định).
 
 
 ## XII. Các tiến trình Admin
 
 ### chạy các tác vụ admin/management như các tiến trình sử dụng một lần
 
-The [process formation][03] is the array of processes that are used to do the app's regular business (such as handling web requests) as it runs. Separately, developers will often wish to do one-off administrative or maintenance tasks for the app, such as:
+The [Hệ thống tiến trình][03] là một loạt các tiến trìnhđược sử dụng để làm các hoạt động thông thường của ứng dụng (chẳng hạn như xử lý các yêu cầu web) khi nó chạy. Riêng biệt, các nhà phát triển chỉ muốn quản lý hay bảo trì 1 việc nào đó chỉ một lần, như là:
 
-* Running database migrations (e.g. `manage.py migrate` in Django, `rake db:migrate` in Rails).
-* Running a console (also known as a [REPL][104] shell) to run arbitrary code or inspect the app's models against the live database. Most languages provide a REPL by running the interpreter without any arguments (e.g. `python` or `perl`) or in some cases have a separate command (e.g. `irb` for Ruby, `rails console` for Rails).
-* Running one-time scripts committed into the app's repo (e.g. `php scripts/fix_bad_records.php`).
+* chạy database migrations (e.g. `manage.py migrate` trong Django, `rake db:migrate` trong Rails).
+* Chạy một console (còn được gọi là [REPL][104] shell) để chạy code tuỳ chỉnh hoặc kiểm tra các mô hình của ứng dụng dựa trên cơ sở dữ liệu trực tiếp. Hầu hết các ngôn ngữ cung cấp REPL bằng cách chạy trình thông dịch mà không có bất kì đối số nào (e.g. `python` hoặc `perl`) hoặc trong một số trường hợp có một lệnh riêng(e.g. `irb` cho Ruby, `rails console` cho Rails).
+* Chạy các tập lệnh một lần được commit voà repo của ứng dụng (e.g. `php scripts/fix_bad_records.php`).
 
-One-off admin processes should be run in an identical environment as the regular [long-running processes][105] of the app. They run against a [release][106], using the same [codebase][107] and [config][108] as any process run against that release. Admin code must ship with application code to avoid synchronization issues.
+Tiến trình quản trị một lần nên được chạy trong môi trường giống hệt nhau như thường lệ [như các tiến trình dài hạn thông thường][105] của ứng dụng. Họ chạy ngược lại một bản [release][106], sử dụng như một [codebase][107] và [config][108] như bất kì quá trình nào chạy trên bản release đó. Code admin phải tương thích với code ứng dụng để tránh các vấn đề đồng bộ hóa.
 
-The same [dependency isolation][109] techniques should be used on all process types. For example, if the Ruby web process uses the command `bundle exec thin start`, then a database migration should use `bundle exec rake db:migrate`. Likewise, a Python program using Virtualenv should use the vendored `bin/python` for running both the Tornado webserver and any `manage.py` admin processes.
+Các kĩ thuật [cô lập sự phụ thuộc][109] giống nhau nên được sử dụng cho tất cả các loại tiến trình. ví dụ như , nếu tiến trình web của Ruby sử dụng câu lệnh `bundle exec thin start`, thì việc migration cơ sở dữ liệu nên sử dụng `bundle exec rake db:migrate`. Tương tự vậy, một chương trình Python sử dụng Virtualenv nên sử dụng các vendored `bin/python` để chạy cả máy chủ web Tornado và mới mọi tiến trình admin `manage.py`.
 
-Twelve-factor strongly favors languages which provide a REPL shell out of the box, and which make it easy to run one-off scripts. In a local deploy, developers invoke one-off admin processes by a direct shell command inside the app's checkout directory. In a production deploy, developers can use ssh or other remote command execution mechanism provided by that deploy's execution environment to run such a process.
+12-chuẩn đặc biệt ưa thích ngôn ngữ cung cấp REPL có hộp điều khiển, và những thứ nó dễ dàng để chạy các lệnh 1 lần. Trong triển khai cục bộ, các người phát triển gọi các tiến trình admin chạy 1 lần bằng các lệnh shell trực tiếp trong thư mục kieerm tra cả ứng dụng. Trong 1 triển khai production, các nhà phát triển có thể sử dụng ssh hay cơ chế thực thi các lệnh remote được cung cấp bởi môi trường thực thi của triển khai để chạy 1 tiến trình.
 
 
 [66]: https://12factor.net/images/process-types.png
